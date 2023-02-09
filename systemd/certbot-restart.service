@@ -1,0 +1,14 @@
+[Unit]
+Description=Restart certbot service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/truongtrongtin0305/docker-services
+ExecStart=/usr/bin/docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              -v "$PWD:$PWD" \
+              -w="$PWD" \
+              docker/compose:1.29.2 restart nginx
+              
+[Install]
+WantedBy=multi-user.target

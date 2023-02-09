@@ -28,30 +28,30 @@ services:
     networks:
       - services-network
 
-  # mailhog:
-  #   image: mailhog/mailhog
-  #   container_name: mailhog
-  #   logging:
-  #     driver: none # disable logs
-  #   ports:
-  #     - 1025:1025 # smtp server
-  #     - 8025:8025 # web ui
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: on-failure
+    volumes:
+      - ./web-root:/var/www/html
+      - ./nginx:/etc/nginx/conf.d
+      - ./dhparam:/etc/ssl/certs
+      - ./certbot:/etc/letsencrypt
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - services-network
 
-  # redis:
-  #   image: redis:alpine
-  #   container_name: redis
-  #   ports:
-  #     - 6379:6379
-
-  # redis-commander:
-  #   container_name: redis-commander
-  #   image: rediscommander/redis-commander:latest
-  #   depends_on:
-  #     - redis
-  #   environment:
-  #     - REDIS_HOSTS=redis
-  #   ports:
-  #     - 8081:8081
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    depends_on:
+      - nginx
+    volumes:
+      - ./web-root:/var/www/html
+      - ./certbot:/etc/letsencrypt
+    command: certonly --webroot --webroot-path=/var/www/html --email truongtrongtin0305@gmail.com --agree-tos --no-eff-email --force-renewal -d leave-tracker-api.tintruong.xyz
 
 volumes:
   postgres-data:
